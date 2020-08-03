@@ -52,7 +52,7 @@ void clusterLidarWithROI(std::vector<BoundingBox> &boundingBoxes, std::vector<Li
 
         // check wether point has been enclosed by one or by multiple boxes
         if (enclosingBoxes.size() == 1)
-        { 
+        {
             // add Lidar point to bounding box
             enclosingBoxes[0]->lidarPoints.push_back(*it1);
         }
@@ -73,7 +73,7 @@ void show3DObjects(std::vector<BoundingBox> &boundingBoxes, cv::Size worldSize, 
         cv::Scalar currColor = cv::Scalar(rng.uniform(0,150), rng.uniform(0, 150), rng.uniform(0, 150));
 
         // plot Lidar points into top view image
-        int top=1e8, left=1e8, bottom=0.0, right=0.0; 
+        int top=1e8, left=1e8, bottom=0.0, right=0.0;
         float xwmin=1e8, ywmin=1e8, ywmax=-1e8;
         for (auto it2 = it1->lidarPoints.begin(); it2 != it1->lidarPoints.end(); ++it2)
         {
@@ -106,7 +106,7 @@ void show3DObjects(std::vector<BoundingBox> &boundingBoxes, cv::Size worldSize, 
         sprintf(str1, "id=%d, #pts=%d", it1->boxID, (int)it1->lidarPoints.size());
         putText(topviewImg, str1, cv::Point2f(left-250, bottom+50), cv::FONT_ITALIC, 2, currColor);
         sprintf(str2, "xmin=%2.2f m, yw=%2.2f m", xwmin, ywmax-ywmin);
-        putText(topviewImg, str2, cv::Point2f(left-250, bottom+125), cv::FONT_ITALIC, 2, currColor);  
+        putText(topviewImg, str2, cv::Point2f(left-250, bottom+125), cv::FONT_ITALIC, 2, currColor);
     }
 
     // plot distance markers
@@ -138,7 +138,7 @@ void clusterKptMatchesWithROI(BoundingBox &boundingBox, std::vector<cv::KeyPoint
 
 
 // Compute time-to-collision (TTC) based on keypoint correspondences in successive images
-void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPoint> &kptsCurr, 
+void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPoint> &kptsCurr,
                       std::vector<cv::DMatch> kptMatches, double frameRate, double &TTC, cv::Mat *visImg)
 {
     // ...
@@ -154,5 +154,44 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
 
 void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bbBestMatches, DataFrame &prevFrame, DataFrame &currFrame)
 {
-    // ...
+    // initialise matrix for counting keypoint correspondances in two frames
+    const int size_c = currFrame.boundingBoxes.size();
+    const int size_p = prevFrame.boundingBoxes.size();
+    cv::Mat count = cv::Mat::zeros(size_c, size_p, CV_32S);
+
+    // count keypoint correspondances
+    for (auto it = matches.begin(); it != matches.end(); ++it)
+    {
+        // get keypoints from pair in current and previous frame
+        cv::KeyPoint currKp = currFrame.keypoints.at(it->trainIdx);
+        cv::KeyPoint prevKp = prevFrame.keypoints.at(it->queryIdx);
+
+        // check if bounding box contain keypoints
+        for (size_t currBB = 0; currBB < size_c; currBB++)
+        {
+            if (currFrame.boundingBoxes[currBB].roi.contains(currKp.pt))
+            {
+                for (size_t prevBB = 0; prevBB < size_p; prevBB++)
+                  {
+                      if (prevFrame.boundingBoxes[prevBB].roi.contains(prevKp.pt))
+                      {
+                          count.at<int>(currBB, prevBB) += 1;
+                      }
+                  }
+            }
+        }
+    }
+
+    // match bounding boxes which have the max keypoint matches correspondances
+    vector<int> rowCount;
+    for (size_t currBB = 0; currBB < size_c; currBB++)
+    {
+        for (size_t prevBB = 0; prevBB < size_p; prevBB++)
+        {
+            rowCount.push_back(count.at<int>(currBB,prevBB));
+        }
+        vector<int>::iterator maxElement = max_element(rowCount.begin(), rowCount.end());
+        int matchedBB = distance(rowCount.begin(), maxElement);
+        bbBestMatches[currBB] = matchedBB;
+    }
 }
