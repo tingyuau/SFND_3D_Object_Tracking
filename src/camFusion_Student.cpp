@@ -4,6 +4,7 @@
 #include <numeric>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <pcl/filters/median_filter.h>
 
 #include "camFusion.hpp"
 #include "dataStructures.h"
@@ -148,7 +149,25 @@ void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPo
 void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
                      std::vector<LidarPoint> &lidarPointsCurr, double frameRate, double &TTC)
 {
-    // ...
+    // apply median filters to point clouds
+    pcl::MedianFilter<PointT>::applyFilter(&lidarPointsPrev);
+    pcl::MedianFilter<PointT>::applyFilter(&lidarPointsCurr);
+
+    // find closest distance to lidar points
+    double minXPrev = 1e9, minXCurr = 1e9;
+    for (auto it = lidarPointsPrev.begin(); it != lidarPointsPrev.end(); ++it)
+    {
+        minXPrev = minXPrev > it->x ? it->x : minXPrev;
+    }
+
+    for (auto it = lidarPointsCurr.begin(); it != lidarPointsCurr.end(); ++it)
+    {
+        minXCurr = minXCurr > it->x ? it->x : minXCurr;
+    }
+
+    // compute TTC from both measurements
+    double dT = 1/frameRate;
+    TTC = minXCurr * dT / (minXPrev - minXCurr);
 }
 
 

@@ -17,6 +17,7 @@ set(CMAKE_C_SIMULATE_VERSION "")
 
 
 
+
 set(CMAKE_AR "/Library/Developer/CommandLineTools/usr/bin/ar")
 set(CMAKE_C_COMPILER_AR "")
 set(CMAKE_RANLIB "/Library/Developer/CommandLineTools/usr/bin/ranlib")
@@ -72,5 +73,5 @@ endif()
 
 set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "/Library/Developer/CommandLineTools/usr/lib/clang/11.0.3/include;/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include;/Library/Developer/CommandLineTools/usr/include")
 set(CMAKE_C_IMPLICIT_LINK_LIBRARIES "")
-set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib")
+set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/usr/local/opt/boost@1.57/lib;/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib")
 set(CMAKE_C_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks")

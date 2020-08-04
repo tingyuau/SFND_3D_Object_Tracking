@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <vector>
 #include <opencv2/core.hpp>
+#include <pcl/common/common.h>
 #include "dataStructures.h"
 
 
@@ -17,5 +18,5 @@ void show3DObjects(std::vector<BoundingBox> &boundingBoxes, cv::Size worldSize, 
 void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPoint> &kptsCurr,
                       std::vector<cv::DMatch> kptMatches, double frameRate, double &TTC, cv::Mat *visImg=nullptr);
 void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
-                     std::vector<LidarPoint> &lidarPointsCurr, double frameRate, double &TTC);                  
+                     std::vector<LidarPoint> &lidarPointsCurr, double frameRate, double &TTC);
 #endif /* camFusion_hpp */
