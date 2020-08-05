@@ -150,8 +150,9 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
                      std::vector<LidarPoint> &lidarPointsCurr, double frameRate, double &TTC)
 {
     // apply median filters to point clouds
-    pcl::MedianFilter<PointT>::applyFilter(&lidarPointsPrev);
-    pcl::MedianFilter<PointT>::applyFilter(&lidarPointsCurr);
+    pcl::MedianFilter<LidarPoint> filter;
+    filter.applyFilter(lidarPointsPrev);
+    filter.applyFilter(lidarPointsCurr);
 
     // find closest distance to lidar points
     double minXPrev = 1e9, minXCurr = 1e9;
