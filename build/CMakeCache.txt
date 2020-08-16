@@ -127,7 +127,7 @@ CMAKE_DLLTOOL:FILEPATH=CMAKE_DLLTOOL-NOTFOUND
 CMAKE_EXECUTABLE_FORMAT:STRING=MACHO
 
 //Flags used by the linker during all build types.
-CMAKE_EXE_LINKER_FLAGS:STRING=
+CMAKE_EXE_LINKER_FLAGS:STRING=-L/usr/local/opt/boost@1.57/lib
 
 //Flags used by the linker during DEBUG builds.
 CMAKE_EXE_LINKER_FLAGS_DEBUG:STRING=
@@ -158,7 +158,7 @@ CMAKE_MAKE_PROGRAM:FILEPATH=/usr/bin/make
 
 //Flags used by the linker during the creation of modules during
 // all build types.
-CMAKE_MODULE_LINKER_FLAGS:STRING=
+CMAKE_MODULE_LINKER_FLAGS:STRING=-L/usr/local/opt/boost@1.57/lib
 
 //Flags used by the linker during the creation of modules during
 // DEBUG builds.
@@ -213,7 +213,7 @@ CMAKE_READELF:FILEPATH=CMAKE_READELF-NOTFOUND
 
 //Flags used by the linker during the creation of shared libraries
 // during all build types.
-CMAKE_SHARED_LINKER_FLAGS:STRING=
+CMAKE_SHARED_LINKER_FLAGS:STRING=-L/usr/local/opt/boost@1.57/lib
 
 //Flags used by the linker during the creation of shared libraries
 // during DEBUG builds.
@@ -719,7 +719,7 @@ CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: EIGEN_INCLUDE_DIR
 EIGEN_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //Details about finding Boost
-FIND_PACKAGE_MESSAGE_DETAILS_Boost:INTERNAL=[/usr/local/include][cfound components: system filesystem thread date_time iostreams chrono atomic regex ][v1.72.0(1.40.0)]
+FIND_PACKAGE_MESSAGE_DETAILS_Boost:INTERNAL=[/usr/local/include][cfound components: system filesystem thread date_time iostreams chrono atomic regex ][v1.73.0(1.40.0)]
 //Details about finding Eigen
 FIND_PACKAGE_MESSAGE_DETAILS_Eigen:INTERNAL=[/usr/local/include/eigen3][v()]
 //Details about finding OpenCV
