@@ -148,23 +148,75 @@ void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPo
 void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
                      std::vector<LidarPoint> &lidarPointsCurr, double frameRate, double &TTC)
 {
-    // TODO: apply median filters
+    // apply 1.5IQR rule to filter lidar points
+    std::vector<double> xPrev;
+
+    for (auto it = lidarPointsPrev.begin(); it != lidarPointsPrev.end(); ++it)
+    {
+        xPrev.push_back(it->x);
+    }
+
+    std::sort(xPrev.begin(), xPrev.end());
+    long midIndexPrev = floor(xPrev.size() / 2.0);
+    double medianPrev = xPrev.size() % 2 == 0 ? (xPrev[midIndexPrev - 1] + xPrev[midIndexPrev]) / 2.0 : xPrev[midIndexPrev];
+
+    std::vector<double> q1Prev = std::vector<double>(xPrev.begin(), xPrev.begin() + midIndexPrev);
+    long q1MidIndexPrev = floor(q1Prev.size() / 2.0);
+    double q1MedianPrev = q1Prev.size() % 2 == 0 ? (q1Prev[q1MidIndexPrev - 1] + q1Prev[q1MidIndexPrev]) / 2.0 : q1Prev[q1MidIndexPrev];
+
+    std::vector<double> q3Prev = std::vector<double>(xPrev.begin() + midIndexPrev, xPrev.end());
+    long q3MidIndexPrev = floor(q3Prev.size() / 2.0);
+    double q3MedianPrev = q3Prev.size() % 2 == 0 ? (q3Prev[q3MidIndexPrev - 1] + q3Prev[q3MidIndexPrev]) / 2.0 : q3Prev[q3MidIndexPrev];
+
+    double IQRPrev = q3MedianPrev - q1MedianPrev;
+    double hiPrev = q3MedianPrev + 1.5 * IQRPrev;
+    double loPrev = q1MedianPrev - 1.5 * IQRPrev;
+
+    std::vector<double> xCurr;
+
+    for (auto it = lidarPointsCurr.begin(); it != lidarPointsCurr.end(); ++it)
+    {
+        xCurr.push_back(it->x);
+    }
+
+    std::sort(xCurr.begin(), xCurr.end());
+    long midIndexCurr = floor(xCurr.size() / 2.0);
+    double medianCurr = xCurr.size() % 2 == 0 ? (xCurr[midIndexCurr - 1] + xCurr[midIndexCurr]) / 2.0 : xCurr[midIndexCurr];
+
+    std::vector<double> q1Curr = std::vector<double>(xCurr.begin(), xCurr.begin() + midIndexCurr);
+    long q1midIndexCurr = floor(q1Curr.size() / 2.0);
+    double q1MedianCurr = q1Curr.size() % 2 == 0 ? (q1Curr[q1midIndexCurr - 1] + q1Curr[q1midIndexCurr]) / 2.0 : q1Curr[q1midIndexCurr];
+
+    std::vector<double> q3Curr = std::vector<double>(xCurr.begin() + midIndexCurr, xCurr.end());
+    long q3midIndexCurr = floor(q3Curr.size() / 2.0);
+    double q3MedianCurr = q3Curr.size() % 2 == 0 ? (q3Curr[q3midIndexCurr - 1] + q3Curr[q3midIndexCurr]) / 2.0 : q3Curr[q3midIndexCurr];
+
+    double IQRCurr = q3MedianCurr - q1MedianCurr;
+    double hiCurr = q3MedianCurr + 1.5 * IQRCurr;
+    double loCurr = q1MedianCurr - 1.5 * IQRCurr;
 
     // find closet distance to lidar points
     double minXPrev = 1e9, minXCurr = 1e9;
     for (auto it = lidarPointsPrev.begin(); it != lidarPointsPrev.end(); ++it)
     {
-        minXPrev = minXPrev > it->x ? it->x : minXPrev;
+        if (it->x < hiPrev && it->x > loPrev)
+        {
+            minXPrev = minXPrev > it->x ? it->x : minXPrev;
+        }
     }
 
     for (auto it = lidarPointsCurr.begin(); it != lidarPointsCurr.end(); ++it)
     {
-        minXCurr = minXCurr > it->x ? it->x : minXCurr;
+        if (it->x < hiCurr && it->x > loCurr)
+        {
+            minXCurr = minXCurr > it->x ? it->x : minXCurr;
+        }
     }
 
     // compute TTC from both measurements
     double dT = 1/frameRate;
     TTC = minXCurr * dT / (minXPrev - minXCurr);
+    cout << "Lidar TTC: " << TTC << endl;
 }
 
 
