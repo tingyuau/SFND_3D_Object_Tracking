@@ -264,10 +264,10 @@ int main(int argc, const char *argv[])
             (dataBuffer.end()-1)->bbMatches = bbBestMatches;
 
             // debug: print bbBestMatches
-            for (auto elem : bbBestMatches)
-            {
-                cout << "matches: " << elem.first << " and " << elem.second <<endl;
-            }
+            // for (auto elem : bbBestMatches)
+            // {
+            //     cout << "matches: " << elem.first << " and " << elem.second <<endl;
+            // }
 
             cout << "#8 : TRACK 3D OBJECT BOUNDING BOXES done" << endl;
 
