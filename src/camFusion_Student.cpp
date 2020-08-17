@@ -197,11 +197,17 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
 
     // find closet distance to lidar points
     double minXPrev = 1e9, minXCurr = 1e9;
+
+    // debug: count filtered lidar points
+    int filteredPrev = 0;
+    int filteredCurr = 0;
+
     for (auto it = lidarPointsPrev.begin(); it != lidarPointsPrev.end(); ++it)
     {
         if (it->x < hiPrev && it->x > loPrev)
         {
             minXPrev = minXPrev > it->x ? it->x : minXPrev;
+            filteredPrev += 1;
         }
     }
 
@@ -210,13 +216,15 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
         if (it->x < hiCurr && it->x > loCurr)
         {
             minXCurr = minXCurr > it->x ? it->x : minXCurr;
+            filteredCurr += 1;
         }
     }
 
-    // compute TTC from both measurements
-    double dT = 1/frameRate;
-    TTC = minXCurr * dT / (minXPrev - minXCurr);
-    cout << "Lidar TTC: " << TTC << endl;
+    cout << "(previous frame) lidar points before filter: " << lidarPointsPrev.size() << endl;
+    cout << "(previous frame) lidar points after filter: " << filteredPrev << endl;
+    cout << "(current frame) lidar points before filter: " << lidarPointsCurr.size() << endl;
+    cout << "(previous frame) lidar points after filter: " << filteredCurr << endl;
+
 }
 
 
