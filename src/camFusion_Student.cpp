@@ -251,9 +251,9 @@ void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bb
     }
 
     // match bounding boxes which have the max keypoint matches correspondances
-    vector<int> rowCount;
     for (size_t currBB = 0; currBB < size_c; currBB++)
     {
+        vector<int> rowCount;
         for (size_t prevBB = 0; prevBB < size_p; prevBB++)
         {
             rowCount.push_back(count.at<int>(currBB,prevBB));
