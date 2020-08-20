@@ -133,7 +133,57 @@ void show3DObjects(std::vector<BoundingBox> &boundingBoxes, cv::Size worldSize, 
 // associate a given bounding box with the keypoints it contains
 void clusterKptMatchesWithROI(BoundingBox &boundingBox, std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPoint> &kptsCurr, std::vector<cv::DMatch> &kptMatches)
 {
-    // ...
+    // calculate euclidean distance for all keypoint matches
+    std::vector<double> distances;
+
+    for (auto it = kptMatches.begin(); it != kptMatches.end(); ++it)
+    {
+        if (boundingBox.roi.contains(kptsCurr[(*it).trainIdx].pt))
+        {
+            double dist = cv::norm(kptsPrev[(*it).queryIdx].pt - kptsCurr[(*it).trainIdx].pt);
+            distances.push_back(dist);
+        }
+    }
+
+    // calculate mean and sd for filtering outliers
+    double sum;
+    for (auto it = distances.begin(); it != distances.end(); ++it)
+    {
+        sum += *it;
+    }
+    double mean = sum/distances.size();
+
+    double variance;
+    for (auto it = distances.begin(); it != distances.end(); ++it)
+    {
+        variance += std::pow(*it - mean, 2);
+    }
+    variance = variance/distances.size();
+    double stdDeviation = std::sqrt(variance);
+
+    double sdThreshold = 3.0;
+    double upperbound = mean + sdThreshold * stdDeviation;
+    double lowerbound = mean - sdThreshold * stdDeviation;
+
+    // extract keypoints contained by bbox and filter outliers
+    for (auto it = kptMatches.begin(); it != kptMatches.end(); ++it)
+    {
+        if (boundingBox.roi.contains(kptsCurr[(*it).trainIdx].pt))
+        {
+            double dist = cv::norm(kptsPrev[(*it).queryIdx].pt - kptsCurr[(*it).trainIdx].pt);
+
+            if (dist > lowerbound && dist < upperbound)
+            {
+                boundingBox.kptMatches.push_back(*it);
+            }
+        }
+    }
+
+    // debug: count filtered keypoint matches
+    cout << "Total keypoint matches: " << kptMatches.size() << endl;
+    cout << "ROI keypoint matches: " << distances.size() << endl;
+    cout << "Filtered keypoint matches: " << boundingBox.kptMatches.size() << endl;
+
 }
 
 
