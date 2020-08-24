@@ -61,7 +61,7 @@ void clusterLidarWithROI(std::vector<BoundingBox> &boundingBoxes, std::vector<Li
 }
 
 
-void show3DObjects(std::vector<BoundingBox> &boundingBoxes, cv::Size worldSize, cv::Size imageSize, bool bWait)
+void show3DObjects(std::vector<BoundingBox> &boundingBoxes, cv::Size worldSize, cv::Size imageSize, std::string fileName, bool bWait)
 {
     // create topview image
     cv::Mat topviewImg(imageSize, CV_8UC3, cv::Scalar(255, 255, 255));
@@ -102,11 +102,13 @@ void show3DObjects(std::vector<BoundingBox> &boundingBoxes, cv::Size worldSize, 
         cv::rectangle(topviewImg, cv::Point(left, top), cv::Point(right, bottom),cv::Scalar(0,0,0), 2);
 
         // augment object with some key data
-        char str1[200], str2[200];
+        char str1[200], str2[200], str3[200];
         sprintf(str1, "id=%d, #pts=%d", it1->boxID, (int)it1->lidarPoints.size());
         putText(topviewImg, str1, cv::Point2f(left-250, bottom+50), cv::FONT_ITALIC, 2, currColor);
         sprintf(str2, "xmin=%2.2f m, yw=%2.2f m", xwmin, ywmax-ywmin);
         putText(topviewImg, str2, cv::Point2f(left-250, bottom+125), cv::FONT_ITALIC, 2, currColor);
+        sprintf(str3, "(%s)", fileName.c_str());
+        putText(topviewImg, str3, cv::Point2f(left-500, bottom-500), cv::FONT_ITALIC, 1, currColor);
     }
 
     // plot distance markers
@@ -238,6 +240,7 @@ void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPo
 
     // debug: print median dist ratio
     // std::cout << "Median dist ratio: " << medDistRatio <<endl;
+    std::cout << "Compute TTC Camera: Done" <<endl;
 }
 
 
@@ -323,6 +326,7 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
     // cout << "(previous frame) lidar points after filter: " << filteredPrev << endl;
     // cout << "(current frame) lidar points before filter: " << lidarPointsCurr.size() << endl;
     // cout << "(current frame) lidar points after filter: " << filteredCurr << endl;
+    cout << "Compute TTC Lidar: Done" <<endl;
 
 }
 
@@ -368,5 +372,15 @@ void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bb
         vector<int>::iterator maxElement = max_element(rowCount.begin(), rowCount.end());
         int matchedBB = distance(rowCount.begin(), maxElement);
         bbBestMatches[currBB] = matchedBB;
+    }
+
+    for (auto it = prevFrame.boundingBoxes.begin(); it != prevFrame.boundingBoxes.end(); ++it)
+    {
+        std::cout <<"Previous frame box ID: " <<it->boxID <<" has lidar points: " <<it->lidarPoints.size() <<endl;
+    }
+
+    for (auto it = currFrame.boundingBoxes.begin(); it != currFrame.boundingBoxes.end(); ++it)
+    {
+        std::cout <<"Current frame box ID: " <<it->boxID <<" has lidar points: " <<it->lidarPoints.size() <<endl;
     }
 }

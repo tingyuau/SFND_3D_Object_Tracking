@@ -93,7 +93,7 @@ int main(int argc, const char *argv[])
         frame.cameraImg = img;
         dataBuffer.push_back(frame);
 
-        cout << "#1 : LOAD IMAGE INTO BUFFER done" << endl;
+        cout << "\n#1 : LOAD IMAGE INTO BUFFER done" << endl;
 
 
         /* DETECT & CLASSIFY OBJECTS */
@@ -132,7 +132,8 @@ int main(int argc, const char *argv[])
         bVis = true;
         if(bVis)
         {
-            show3DObjects((dataBuffer.end()-1)->boundingBoxes, cv::Size(4.0, 20.0), cv::Size(2000, 2000), true);
+            cout << "3D view: " << lidarFullFilename <<endl;
+            show3DObjects((dataBuffer.end()-1)->boundingBoxes, cv::Size(4.0, 20.0), cv::Size(2000, 2000), lidarFullFilename, true);
         }
         bVis = false;
 
@@ -264,10 +265,10 @@ int main(int argc, const char *argv[])
             (dataBuffer.end()-1)->bbMatches = bbBestMatches;
 
             // debug: print bbBestMatches
-            // for (auto elem : bbBestMatches)
-            // {
-            //     cout << "matches: " << elem.first << " and " << elem.second <<endl;
-            // }
+            for (auto elem : bbBestMatches)
+            {
+                cout << "matches (prev and curr): " << elem.first << " and " << elem.second <<endl;
+            }
 
             cout << "#8 : TRACK 3D OBJECT BOUNDING BOXES done" << endl;
 
@@ -298,6 +299,8 @@ int main(int argc, const char *argv[])
                 // compute TTC for current match
                 if( currBB->lidarPoints.size()>0 && prevBB->lidarPoints.size()>0 ) // only compute TTC if we have Lidar points
                 {
+                    cout << "Lidar points collected for BBMatch (prev and curr): " << prevBB->boxID << " and " << currBB->boxID <<endl;
+
                     //// STUDENT ASSIGNMENT
                     //// TASK FP.2 -> compute time-to-collision based on Lidar data (implement -> computeTTCLidar)
                     double ttcLidar;
@@ -319,13 +322,16 @@ int main(int argc, const char *argv[])
                         showLidarImgOverlay(visImg, currBB->lidarPoints, P_rect_00, R_rect_00, RT, &visImg);
                         cv::rectangle(visImg, cv::Point(currBB->roi.x, currBB->roi.y), cv::Point(currBB->roi.x + currBB->roi.width, currBB->roi.y + currBB->roi.height), cv::Scalar(0, 255, 0), 2);
 
-                        char str[200];
-                        sprintf(str, "TTC Lidar : %f s, TTC Camera : %f s", ttcLidar, ttcCamera);
-                        putText(visImg, str, cv::Point2f(80, 50), cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0,0,255));
+                        char str1[200], str2[200];
+                        sprintf(str1, "TTC Lidar : %f s, TTC Camera : %f s", ttcLidar, ttcCamera);
+                        putText(visImg, str1, cv::Point2f(80, 50), cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0,0,255));
+                        sprintf(str2, "(%s)", imgFullFilename.c_str());
+                        putText(visImg, str2, cv::Point2f(30, 20), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0,0,255));
 
                         string windowName = "Final Results : TTC";
                         cv::namedWindow(windowName, 4);
                         cv::imshow(windowName, visImg);
+                        cout << "Image: " <<imgFullFilename <<endl;
                         cout << "Press key to continue to next frame" << endl;
                         cv::waitKey(0);
                     }
