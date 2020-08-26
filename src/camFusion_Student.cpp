@@ -322,6 +322,8 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
     double dT = 1/frameRate;
     TTC = minXCurr * dT / (minXPrev - minXCurr);
 
+    // cout << "minXPrev: " << minXPrev <<endl;
+    // cout << "minXCurr: " << minXCurr <<endl;
     // cout << "(previous frame) lidar points before filter: " << lidarPointsPrev.size() << endl;
     // cout << "(previous frame) lidar points after filter: " << filteredPrev << endl;
     // cout << "(current frame) lidar points before filter: " << lidarPointsCurr.size() << endl;
