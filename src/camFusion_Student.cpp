@@ -240,7 +240,7 @@ void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPo
 
     // debug: print median dist ratio
     // std::cout << "Median dist ratio: " << medDistRatio <<endl;
-    std::cout << "Compute TTC Camera: Done" <<endl;
+    // std::cout << "Compute TTC Camera: Done" <<endl;
 }
 
 
@@ -328,7 +328,7 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
     // cout << "(previous frame) lidar points after filter: " << filteredPrev << endl;
     // cout << "(current frame) lidar points before filter: " << lidarPointsCurr.size() << endl;
     // cout << "(current frame) lidar points after filter: " << filteredCurr << endl;
-    cout << "Compute TTC Lidar: Done" <<endl;
+    // cout << "Compute TTC Lidar: Done" <<endl;
 
 }
 
@@ -376,13 +376,13 @@ void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bb
         bbBestMatches[currBB] = matchedBB;
     }
 
-    for (auto it = prevFrame.boundingBoxes.begin(); it != prevFrame.boundingBoxes.end(); ++it)
-    {
-        std::cout <<"Previous frame box ID: " <<it->boxID <<" has lidar points: " <<it->lidarPoints.size() <<endl;
-    }
-
-    for (auto it = currFrame.boundingBoxes.begin(); it != currFrame.boundingBoxes.end(); ++it)
-    {
-        std::cout <<"Current frame box ID: " <<it->boxID <<" has lidar points: " <<it->lidarPoints.size() <<endl;
-    }
+    // for (auto it = prevFrame.boundingBoxes.begin(); it != prevFrame.boundingBoxes.end(); ++it)
+    // {
+    //     std::cout <<"Previous frame box ID: " <<it->boxID <<" has lidar points: " <<it->lidarPoints.size() <<endl;
+    // }
+    //
+    // for (auto it = currFrame.boundingBoxes.begin(); it != currFrame.boundingBoxes.end(); ++it)
+    // {
+    //     std::cout <<"Current frame box ID: " <<it->boxID <<" has lidar points: " <<it->lidarPoints.size() <<endl;
+    // }
 }
